@@ -29,6 +29,10 @@
 <div class="container">
   <div class="input-section">
     <input type="text" id="user-input" placeholder="请输入您的问题">
+    <select id="model-select">
+      <option value="qwen">Qwen</option>
+      <option value="llama3">Llama3</option>
+    </select>
     <button onclick="submitQuestion()">提交</button>
   </div>
   <div class="output-section" id="response-box"></div>
@@ -37,6 +41,7 @@
 <script>
   function submitQuestion() {
     var userInput = document.getElementById("user-input").value;
+    var selectedModel = document.getElementById("model-select").value;
     var responseBox = document.getElementById("response-box");
 
     // 在回复框中显示用户输入
@@ -45,10 +50,10 @@
     // 清空输入框
     document.getElementById("user-input").value = "";
 
-    // 向后端发送用户输入并获取回复
+    // 向后端发送用户输入和选择的模型，并获取回复
     fetch('/api/answer', {
       method: 'POST',
-    body: JSON.stringify({ question: userInput }),
+      body: JSON.stringify({ question: userInput, model: selectedModel }),
       headers: {
         'Content-Type': 'application/json'
       }

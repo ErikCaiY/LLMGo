@@ -9,7 +9,8 @@ import (
 )
 
 type AnswerRequest struct {
-	Question string `json:"question" bind:"required"`
+	Question string `json:"question" bing:"required"`
+	Model    string `json:"model"`
 }
 
 type AnswerResponse struct {
@@ -21,7 +22,7 @@ func main() {
 
 	r.LoadHTMLGlob("./templates/*")
 	r.GET("/chat", getHTML)
-	r.POST("/api/answer", getAnswerFromQwen)
+	r.POST("/api/answer", getAnswerFromModel)
 
 	r.Run(":8080")
 }
@@ -30,7 +31,7 @@ func getHTML(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "index.html", gin.H{})
 }
 
-func getAnswerFromQwen(ctx *gin.Context) {
+func getAnswerFromModel(ctx *gin.Context) {
 	var request AnswerRequest
 	err := ctx.BindJSON(&request)
 	if err != nil {
@@ -38,7 +39,7 @@ func getAnswerFromQwen(ctx *gin.Context) {
 		return
 	}
 
-	llm, err := ollama.New(ollama.WithModel("qwen"))
+	llm, err := ollama.New(ollama.WithModel(request.Model))
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
